@@ -45,7 +45,7 @@ export default {
   },
   async created() {
     try {
-      const response = await apiClient.get('/profile/');
+      const response = await apiClient.get('/users/profile/');
       this.user = response.data;
     } catch (error) {
       console.error('Failed to load user profile', error);
@@ -68,31 +68,72 @@ export default {
 <style scoped>
 .user-page-container {
   max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
 }
 
-.profile-section {
-  margin-bottom: 20px;
+h1 {
+  text-align: center;
+  color: #2c3e50;
+  font-size: 2.5em;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #42b983;
+  padding-bottom: 10px;
+}
+
+.profile-section p {
+  font-size: 1.2em;
+  margin-bottom: 15px;
+  line-height: 1.5;
+  color: #4d4d4d;
+}
+
+.profile-section strong {
+  color: #42b983;
+}
+
+.profile-section ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin-top: 10px;
+}
+
+.profile-section ul li {
+  font-size: 1.1em;
+  color: #555;
+  margin-bottom: 8px;
 }
 
 .profile-photo {
-  max-width: 150px;
+  max-width: 200px;
   border-radius: 50%;
+  border: 3px solid #42b983;
+  display: block;
+  margin: 20px auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-button {
-  padding: 10px 20px;
+.edit-button {
+  padding: 12px 24px;
   background-color: #42b983;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 1.2em;
+  display: block;
+  margin: 30px auto;
 }
 
-button:hover {
+.edit-button:hover {
   background-color: #368a6d;
 }
 </style>
+
+

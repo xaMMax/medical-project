@@ -22,7 +22,7 @@ const routes = [
     component: Register,
   },
   {
-    path: '/profile',
+    path: '/users/profile',
     name: 'profile',
     component: Profile,
     meta: { requiresAuth: true },

@@ -21,7 +21,7 @@
     },
     async created() {
       try {
-        const response = await apiClient.get('profile/');
+        const response = await apiClient.get('users/profile/');
         this.username = response.data.username;
       } catch (error) {
         console.error('Failed to load user profile', error);
