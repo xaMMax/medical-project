@@ -45,7 +45,7 @@ export default {
   },
   async created() {
     try {
-      const response = await apiClient.get('/users/profile/');
+      const response = await apiClient.get('profile');
       this.user = response.data;
     } catch (error) {
       console.error('Failed to load user profile', error);

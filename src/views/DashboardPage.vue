@@ -2,31 +2,35 @@
     <div class="dashboard-container">
       <h1>{{ username }} Dashboard</h1>
       <UserList />
+      <ConsultationList />
     </div>
   </template>
   
   <script>
   import UserList from '@/components/UserList.vue';
-  import apiClient from '@/services/api';
+  // import apiClient from '@/services/api';
+  import ConsultationList from "@/components/ConsultationList.vue";
   
   export default {
     name: 'DashboardPage',
     components: {
       UserList, // Додаємо компонент UserList
+      ConsultationList,
+
     },
-    data() {
-      return {
-        username: '',
-      };
-    },
-    async created() {
-      try {
-        const response = await apiClient.get('users/profile/');
-        this.username = response.data.username;
-      } catch (error) {
-        console.error('Failed to load user profile', error);
-      }
-    },
+    // data() {
+    //   return {
+    //     username: '',
+    //   };
+    // },
+    // async created() {
+    //   try {
+    //     const response = await apiClient.get('profile/');
+    //     this.username = response.data.username;
+    //   } catch (error) {
+    //     console.error('Failed to load user profile', error);
+    //   }
+    // },
   };
   </script>
   
