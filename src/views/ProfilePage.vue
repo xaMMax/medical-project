@@ -8,16 +8,6 @@
       <p><strong>Phone:</strong> {{ user.phone }}</p>
       <p><strong>Address:</strong> {{ user.address }}</p>
       <p><strong>Bio:</strong> {{ user.bio }}</p>
-      <p><strong>Groups:</strong>
-        <ul>
-          <li v-for="group in user.groups" :key="group">{{ group }}</li>
-        </ul>
-      </p>
-      <p><strong>Permissions:</strong>
-        <ul>
-          <li v-for="permission in user.user_permissions" :key="permission">{{ permission }}</li>
-        </ul>
-      </p>
       <div v-if="user.photo">
         <p><strong>Profile Photo:</strong></p>
         <img :src="user.photo" alt="Profile Photo" class="profile-photo"/>

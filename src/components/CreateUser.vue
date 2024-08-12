@@ -30,15 +30,6 @@
         newUser: {
           username: '',
           email: '',
-          first_name: '',
-          last_name: '',
-          phone: '',
-          address: '',
-          bio: '',
-          photo: null,
-          is_doctor: false,
-          is_user: true,
-          groups: [],
         },
       };
     },

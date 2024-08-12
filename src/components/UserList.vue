@@ -15,7 +15,6 @@
             <th>Photo</th>
             <th>Doctor</th>
             <th>User</th>
-            <th>Groups</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -33,40 +32,32 @@
             <td>{{ user.is_doctor ? 'Yes' : 'No' }}</td>
             <td>{{ user.is_user ? 'Yes' : 'No' }}</td>
             <td>
-              <ul>
-                <li v-for="group in user.groups" :key="group">{{ group }}</li>
-              </ul>
-            </td>
-            <td>
               <button @click="editUser(user)">Edit</button>
               <button @click="deleteUser(user.id)">Delete</button>
             </td>
           </tr>
         </tbody>
       </table>
-  
+
       <!-- Модальне вікно редагування -->
       <div v-if="showEditModal" class="modal">
         <div class="modal-content">
           <h3>Edit User</h3>
           <label for="edit-username">Username:</label>
           <input v-model="editedUser.username" id="edit-username" type="text" />
-  
+
           <label for="edit-email">Email:</label>
           <input v-model="editedUser.email" id="edit-email" type="email" />
-  
-          <label for="edit-groups">Groups:</label>
-          <input v-model="editedUser.groups" id="edit-groups" type="text" placeholder="Enter comma-separated groups" />
-  
+
           <label for="edit-is-doctor">Is Doctor:</label>
           <input v-model="editedUser.is_doctor" id="edit-is-doctor" type="checkbox" />
-  
+
           <label for="edit-is-user">Is User:</label>
           <input v-model="editedUser.is_user" id="edit-is-user" type="checkbox" />
-  
+
           <label for="edit-photo">Update Photo:</label>
           <input type="file" @change="onPhotoChange" />
-  
+
           <div class="modal-buttons">
             <button @click="saveEditedUser">Save</button>
             <button @click="closeEditModal" class="cancel-button">Cancel</button>
@@ -75,10 +66,10 @@
       </div>
     </div>
   </template>
-  
+
   <script>
   import apiClient from '@/services/api';
-  
+
   export default {
     data() {
       return {
@@ -110,7 +101,7 @@
             console.error('No user ID found');
             return;
           }
-  
+
           const formData = new FormData();
           formData.append('username', this.editedUser.username);
           formData.append('email', this.editedUser.email);
@@ -121,18 +112,17 @@
           formData.append('bio', this.editedUser.bio);
           formData.append('is_doctor', this.editedUser.is_doctor);
           formData.append('is_user', this.editedUser.is_user);
-          formData.append('groups', this.editedUser.groups.join(','));
-  
+
           if (this.newPhotoFile) {
             formData.append('photo', this.newPhotoFile);
           }
-  
+
           const response = await apiClient.put(`/users/${this.editedUser.id}/`, formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
             },
           });
-  
+
           console.log('User updated:', response.data);
           alert('User updated successfully!');
           this.closeEditModal();
@@ -166,25 +156,25 @@
     },
   };
   </script>
-  
+
   <style scoped>
   table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
   }
-  
+
   th, td {
     padding: 12px;
     border: 1px solid #ddd;
     text-align: left;
   }
-  
+
   .user-photo {
     max-width: 50px;
     border-radius: 4px;
   }
-  
+
   button {
     padding: 8px 12px;
     margin-right: 10px;
@@ -194,19 +184,19 @@
     border-radius: 4px;
     cursor: pointer;
   }
-  
+
   button:hover {
     background-color: #368a6d;
   }
-  
+
   .cancel-button {
     background-color: #f44336;
   }
-  
+
   .cancel-button:hover {
     background-color: #d32f2f;
   }
-  
+
   /* Стилі для модального вікна */
   .modal {
     position: fixed;
@@ -219,7 +209,7 @@
     justify-content: center;
     align-items: center;
   }
-  
+
   .modal-content {
     background: white;
     padding: 20px;
@@ -228,17 +218,17 @@
     width: 100%;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   }
-  
+
   .modal-content h3 {
     margin-bottom: 15px;
   }
-  
+
   .modal-content label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
   }
-  
+
   .modal-content input[type="text"],
   .modal-content input[type="email"] {
     width: 100%;
@@ -248,11 +238,10 @@
     border-radius: 4px;
     box-sizing: border-box;
   }
-  
+
   .modal-buttons {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
   }
   </style>
-  
