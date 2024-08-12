@@ -16,7 +16,7 @@ module.exports = defineConfig({
     }
   },
   publicPath: process.env.NODE_ENV === 'production'
-    ? '/my-vue-app/'
+    ? '/medical-project/'
     : '/',
   devServer: {
     proxy: {
