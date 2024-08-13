@@ -2,22 +2,27 @@
   <div class="user-profile">
     <h2>Профіль користувача</h2>
 
-    <div v-if="!isEditing">
+    <div v-if="!isEditingData && !isEditingPhoto">
       <div class="profile-info">
+        <div v-if="profile.photo">
+          <img :src="profile.photo" alt="Фото профілю" class="profile-photo" />
+        </div>
         <p><strong>Ім'я користувача:</strong> {{ profile.username }}</p>
         <p><strong>Email:</strong> {{ profile.email }}</p>
         <p><strong>Телефон:</strong> {{ profile.phone || 'Не вказано' }}</p>
         <p><strong>Адреса:</strong> {{ profile.address || 'Не вказано' }}</p>
         <p><strong>Біографія:</strong> {{ profile.bio || 'Не вказано' }}</p>
-        <div v-if="profile.photo">
-          <img :src="profile.photo" alt="Фото профілю" class="profile-photo" />
-        </div>
+
       </div>
-      <button @click="isEditing = true">Редагувати профіль</button>
+      <div class="buttons">
+        <button @click="isEditingData = true">Редагувати дані</button>
+        <button @click="isEditingPhoto = true">Змінити фото</button>
+      </div>
     </div>
 
-    <div v-else>
-      <form @submit.prevent="updateProfile">
+    <!-- Форма для редагування даних користувача -->
+    <div v-else-if="isEditingData">
+      <form @submit.prevent="updateProfileData">
         <div class="form-group">
           <label for="username">Ім'я користувача</label>
           <input type="text" v-model="profile.username" id="username" required />
@@ -43,14 +48,24 @@
           <textarea v-model="profile.bio" id="bio" rows="4"></textarea>
         </div>
 
+        <div class="buttons">
+          <button type="submit">Зберегти зміни</button>
+          <button type="button" @click="cancelEditData">Скасувати</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Форма для зміни фото профілю -->
+    <div v-else-if="isEditingPhoto">
+      <form @submit.prevent="updateProfilePhoto">
         <div class="form-group">
           <label for="photo">Фото профілю</label>
-          <input type="file" @change="onFileChange" id="photo"/>
+          <input type="file" @change="onFileChange" id="photo" required />
         </div>
 
         <div class="buttons">
-          <button type="submit">Зберегти зміни</button>
-          <button type="button" @click="cancelEdit">Скасувати</button>
+          <button type="submit">Зберегти фото</button>
+          <button type="button" @click="cancelEditPhoto">Скасувати</button>
         </div>
       </form>
     </div>
@@ -72,7 +87,8 @@ export default {
         bio: '',
         photo: null,
       },
-      isEditing: false,
+      isEditingData: false,
+      isEditingPhoto: false,
     };
   },
   methods: {
@@ -89,37 +105,66 @@ export default {
           }
         });
     },
-    updateProfile() {
-      const formData = new FormData();
-
-      for (const key in this.profile) {
-        if (key === 'photo' && this.profile[key]) {
-          formData.append(key, this.profile[key], this.profile[key].name);
-        } else {
-          formData.append(key, this.profile[key]);
-        }
-      }
+    updateProfileData() {
+      const data = {
+        username: this.profile.username,
+        email: this.profile.email,
+        phone: this.profile.phone,
+        address: this.profile.address,
+        bio: this.profile.bio,
+      };
 
       apiClient
-        .put('profile/', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        })
+        .put('profile/', data)
         .then(() => {
-          alert('Профіль оновлено успішно');
-          this.isEditing = false;
+          alert('Дані профілю оновлено успішно');
+          this.isEditingData = false;
+          this.fetchUserProfile();
         })
         .catch((error) => {
-          console.error('Error updating profile:', error);
+          console.error('Error updating profile data:', error);
         });
     },
+    updateProfilePhoto() {
+  if (!this.profile.photo) {
+    alert('Будь ласка, оберіть фото для завантаження.');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('username', this.profile.username);
+  formData.append('email', this.profile.email);
+  formData.append('phone', this.profile.phone || '');
+  formData.append('address', this.profile.address || '');
+  formData.append('bio', this.profile.bio || '');
+  formData.append('photo', this.profile.photo, this.profile.photo.name);
+
+  apiClient
+    .put('profile/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    .then(() => {
+      alert('Фото профілю оновлено успішно');
+      this.isEditingPhoto = false;
+      this.fetchUserProfile();
+    })
+    .catch((error) => {
+      console.error('Error updating profile photo:', error);
+      alert('Сталася помилка при оновленні фото.');
+    });
+},
     onFileChange(e) {
       this.profile.photo = e.target.files[0];
     },
-    cancelEdit() {
-      this.isEditing = false;
+    cancelEditData() {
+      this.isEditingData = false;
       this.fetchUserProfile(); // Повторне завантаження профілю для скасування змін
+    },
+    cancelEditPhoto() {
+      this.isEditingPhoto = false;
+      this.profile.photo = null; // Скидаємо вибране фото
     },
   },
   created() {

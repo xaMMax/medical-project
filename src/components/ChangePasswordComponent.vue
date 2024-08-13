@@ -19,13 +19,15 @@
 
       <button type="submit">Змінити пароль</button>
     </form>
-    <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+    <div v-if="errorMessage" class="error">
+      <p v-for="(message, index) in errorMessage" :key="index">{{ message }}</p>
+    </div>
     <p v-if="successMessage" class="success">{{ successMessage }}</p>
   </div>
 </template>
 
 <script>
-import apiClient from '@/services/apiClient';  // Імпортуємо apiClient
+import apiClient from '@/services/apiClient';
 
 export default {
   name: 'ChangePasswordComponent',
@@ -36,14 +38,14 @@ export default {
         newPassword: '',
         confirmPassword: '',
       },
-      errorMessage: '',
+      errorMessage: [],
       successMessage: '',
     };
   },
   methods: {
     changePassword() {
       if (this.form.newPassword !== this.form.confirmPassword) {
-        this.errorMessage = 'Новий пароль та підтвердження пароля не збігаються.';
+        this.errorMessage = ['Новий пароль та підтвердження пароля не збігаються.'];
         return;
       }
 
@@ -54,14 +56,30 @@ export default {
         })
         .then(() => {
           this.successMessage = 'Пароль успішно змінено.';
-          this.errorMessage = '';
+          this.errorMessage = [];
           this.form.oldPassword = '';
           this.form.newPassword = '';
           this.form.confirmPassword = '';
         })
         .catch((error) => {
-          console.error('Error changing password:', error);
-          this.errorMessage = 'Помилка при зміні пароля. Перевірте введені дані.';
+          if (error.response && error.response.data) {
+            const errors = error.response.data;
+            this.errorMessage = [];
+
+            if (errors.old_password) {
+              this.errorMessage.push(`Старий пароль: ${errors.old_password.join(' ')}`);
+            }
+
+            if (errors.new_password) {
+              this.errorMessage.push(`Новий пароль: ${errors.new_password.join(' ')}`);
+            }
+
+            if (!errors.old_password && !errors.new_password) {
+              this.errorMessage.push('Помилка при зміні пароля. Перевірте введені дані.');
+            }
+          } else {
+            this.errorMessage = ['Невідома помилка. Спробуйте ще раз пізніше.'];
+          }
           this.successMessage = '';
         });
     },
