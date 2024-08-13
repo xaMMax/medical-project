@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import apiClient from '@/services/apiClient'; // Імпортуємо apiClient
+import apiClient from '@/services/apiClient';
 
 export default {
   name: 'UserProfileComponent',
@@ -70,24 +70,22 @@ export default {
         bio: '',
         photo: null,
       },
-      isEditing: false, // Додаємо стан редагування
-      originalProfile: null, // Зберігаємо оригінальні дані для скасування змін
+      isEditing: false,
     };
   },
   methods: {
     fetchUserProfile() {
       apiClient
-          .get('profile/')
-          .then((response) => {
-            this.profile = response.data;
-            this.originalProfile = {...response.data}; // Зберігаємо оригінальні дані
-          })
-          .catch((error) => {
-            console.error('Error fetching profile:', error);
-            if (error.response && error.response.status === 401) {
-              this.$router.push('/login');
-            }
-          });
+        .get('profile/')
+        .then((response) => {
+          this.profile = response.data;
+        })
+        .catch((error) => {
+          console.error('Error fetching profile:', error);
+          if (error.response && error.response.status === 401) {
+            this.$router.push('/login');
+          }
+        });
     },
     updateProfile() {
       const formData = new FormData();
@@ -101,25 +99,25 @@ export default {
       }
 
       apiClient
-          .put('profile/', formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          })
-          .then(() => {
-            alert('Профіль оновлено успішно');
-            this.isEditing = false; // Виходимо з режиму редагування після успішного оновлення
-          })
-          .catch((error) => {
-            console.error('Error updating profile:', error);
-          });
+        .put('profile/', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        .then(() => {
+          alert('Профіль оновлено успішно');
+          this.isEditing = false;
+        })
+        .catch((error) => {
+          console.error('Error updating profile:', error);
+        });
     },
     onFileChange(e) {
       this.profile.photo = e.target.files[0];
     },
     cancelEdit() {
       this.isEditing = false;
-      this.profile = {...this.originalProfile}; // Повертаємо оригінальні дані
+      this.fetchUserProfile(); // Повторне завантаження профілю для скасування змін
     },
   },
   created() {
