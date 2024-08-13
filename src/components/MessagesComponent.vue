@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import apiClient from '@/services/apiClient';  // Імпортуємо apiClient
 
 export default {
   name: 'MessagesComponent',
@@ -23,19 +23,14 @@ export default {
   },
   methods: {
     fetchMessages() {
-      const token = localStorage.getItem('accessToken');
-      axios
-        .get('/api/messages/', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+      apiClient
+        .get('messages/')  // Використовуємо apiClient для запиту
         .then((response) => {
           this.messages = response.data;
         })
         .catch((error) => {
           console.error('Error fetching messages:', error);
-          if (error.response.status === 401) {
+          if (error.response && error.response.status === 401) {
             this.$router.push('/login');
           }
         });

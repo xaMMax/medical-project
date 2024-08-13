@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import apiClient from '@/services/apiClient';  // Імпортуємо apiClient
 
 export default {
   name: 'ConsultationActionsComponent',
@@ -32,18 +32,13 @@ export default {
   },
   methods: {
     editConsultation() {
-      this.$router.push(`/consultation/edit/${this.consultationId}`);
+      // Припустимо, що редагування може бути через форму або іншу дію.
+      alert('Редагування консультації ще не налаштоване.');
     },
     deleteConsultation() {
-      const token = localStorage.getItem('accessToken');
-
       if (confirm('Ви впевнені, що хочете видалити цю консультацію?')) {
-        axios
-          .delete(`/api/consultations/${this.consultationId}/`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
+        apiClient
+          .delete(`consultations/${this.consultationId}/`)
           .then(() => {
             this.$router.push('/dashboard');
           })

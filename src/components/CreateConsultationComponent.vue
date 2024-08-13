@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import apiClient from '@/services/apiClient';  // Імпортуємо apiClient
 
 export default {
   name: 'CreateConsultationComponent',
@@ -49,31 +49,21 @@ export default {
   },
   methods: {
     fetchPatients() {
-      const token = localStorage.getItem('accessToken');
-      axios
-        .get('/api/users/', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+      apiClient
+        .get('users/')  // Використовуємо apiClient для запиту
         .then((response) => {
-          this.patients = response.data.filter(user => !user.is_doctor | !user.is_superuser | !user.is_staff);
+          this.patients = response.data.filter(user => !user.is_doctor && !user.is_superuser && !user.is_staff);
         })
         .catch((error) => {
           console.error('Error fetching patients:', error);
-          if (error.response.status === 401) {
+          if (error.response && error.response.status === 401) {
             this.$router.push('/login');
           }
         });
     },
     submitConsultation() {
-      const token = localStorage.getItem('accessToken');
-      axios
-        .post('/api/consultations/', this.form, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+      apiClient
+        .post('consultations/', this.form)  // Використовуємо apiClient для запиту
         .then(() => {
           this.$router.push('/dashboard'); // Після успішного створення консультації перенаправляємо на Dashboard
         })

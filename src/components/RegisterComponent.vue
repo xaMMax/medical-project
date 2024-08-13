@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import apiClient from '@/services/apiClient';  // Імпортуємо apiClient
 
 export default {
   name: 'RegisterComponent',
@@ -53,8 +53,8 @@ export default {
         return;
       }
 
-      axios
-        .post('/api/register/', {
+      apiClient
+        .post('register/', {
           username: this.form.username,
           email: this.form.email,
           password: this.form.password,

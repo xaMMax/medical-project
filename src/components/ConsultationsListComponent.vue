@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import apiClient from '@/services/apiClient';  // Імпортуємо apiClient
 
 export default {
   name: 'ConsultationsListComponent',
@@ -24,19 +24,14 @@ export default {
   },
   methods: {
     fetchConsultations() {
-      const token = localStorage.getItem('accessToken');
-      axios
-        .get('/api/consultations/', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+      apiClient
+        .get('consultations/')  // Використовуємо apiClient для запиту
         .then((response) => {
           this.consultations = response.data;
         })
         .catch((error) => {
           console.error('Error fetching consultations:', error);
-          if (error.response.status === 401) {
+          if (error.response && error.response.status === 401) {
             this.$router.push('/login');
           }
         });

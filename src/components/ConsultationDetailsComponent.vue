@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import apiClient from '@/services/apiClient';  // Імпортуємо apiClient
 
 export default {
   name: 'ConsultationDetailsComponent',
@@ -31,15 +31,10 @@ export default {
   },
   methods: {
     fetchConsultationDetails() {
-      const token = localStorage.getItem('accessToken');
       const consultationId = this.$route.params.id;
 
-      axios
-        .get(`/api/consultations/${consultationId}/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+      apiClient
+        .get(`consultations/${consultationId}/`)
         .then((response) => {
           this.consultation = response.data;
           this.isDoctor = response.data.is_doctor; // Якщо API повертає цю інформацію
@@ -47,7 +42,7 @@ export default {
         })
         .catch((error) => {
           console.error('Error fetching consultation details:', error);
-          if (error.response.status === 401) {
+          if (error.response && error.response.status === 401) {
             this.$router.push('/login');
           }
         });
@@ -57,15 +52,10 @@ export default {
       this.$router.push(`/consultation/edit/${this.consultation.id}`);
     },
     deleteConsultation() {
-      const token = localStorage.getItem('accessToken');
       const consultationId = this.consultation.id;
 
-      axios
-        .delete(`/api/consultations/${consultationId}/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+      apiClient
+        .delete(`consultations/${consultationId}/`)
         .then(() => {
           this.$router.push('/dashboard');
         })

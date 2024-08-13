@@ -6,6 +6,7 @@ import ConsultationDetails from "@/views/ConsultationDetails.vue";
 import DashboardPage from "@/views/DashboardPage.vue";
 import ConsultationsListComponent from "@/components/ConsultationsListComponent.vue";
 import RegisterComponent from "@/components/RegisterComponent.vue";
+import NotFoundPage from "@/views/NotFoundPage.vue"; // Новий компонент для 404
 
 const routes = [
   {
@@ -46,6 +47,11 @@ const routes = [
     name: 'consultationDetails',
     component: ConsultationDetails,
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/:pathMatch(.*)*', // Доданий маршрут для обробки 404
+    name: 'not-found',
+    component: NotFoundPage,
   }
 ];
 
@@ -59,7 +65,10 @@ router.beforeEach((to, from, next) => {
     const isAuthenticated = !!localStorage.getItem('accessToken');
 
     if (requiresAuth && !isAuthenticated) {
-      next('/login');
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath } // Зберігаємо початковий маршрут для перенаправлення після входу
+      });
     } else {
       next();
     }

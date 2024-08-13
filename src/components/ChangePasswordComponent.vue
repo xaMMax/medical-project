@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import apiClient from '@/services/apiClient';  // Імпортуємо apiClient
 
 export default {
   name: 'ChangePasswordComponent',
@@ -47,20 +47,11 @@ export default {
         return;
       }
 
-      const token = localStorage.getItem('accessToken');
-      axios
-        .put(
-          '/api/change-password/',
-          {
-            old_password: this.form.oldPassword,
-            new_password: this.form.newPassword,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
+      apiClient
+        .put('change-password/', {
+          old_password: this.form.oldPassword,
+          new_password: this.form.newPassword,
+        })
         .then(() => {
           this.successMessage = 'Пароль успішно змінено.';
           this.errorMessage = '';

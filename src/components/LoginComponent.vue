@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import apiClient from '@/services/apiClient';  // Імпортуємо apiClient
 
 export default {
   name: 'LoginComponent',
@@ -34,8 +34,8 @@ export default {
   },
   methods: {
     login() {
-      axios
-        .post('https://xammax.pythonanywhere.com/api/login/', this.form)  // Оновлений URL
+      apiClient
+        .post('login/', this.form)  // Використовуємо apiClient для запиту
         .then((response) => {
           console.log('Login successful:', response.data);
           // Зберігаємо токени у localStorage
@@ -44,7 +44,7 @@ export default {
           localStorage.setItem('userEmail', this.form.email);
 
           // Отримуємо список користувачів
-          return axios.get('https://xammax.pythonanywhere.com/api/users/', {  // Оновлений URL
+          return apiClient.get('users/', {  // Використовуємо apiClient для запиту
             headers: {
               Authorization: `Bearer ${response.data.access}`,
             },

@@ -1,20 +1,20 @@
 <template>
   <div class="user-consultations">
     <h2>Консультації для {{ isDoctor ? 'Доктора' : 'Пацієнта' }}</h2>
-      <p v-if="isLoaded && consultations.length === 0">У вас немає запланованих консультацій.</p>
-      <ul v-else-if="isLoaded && consultations.length">
-        <li v-for="consultation in consultations" :key="consultation.id">
-          <router-link :to="`/consultation/${consultation.id}`">
-            Консультація з {{ isDoctor ? consultation.patient_name : consultation.doctor_name }}
-            на {{ consultation.date }} о {{ consultation.time }}
-          </router-link>
-        </li>
-      </ul>
+    <p v-if="isLoaded && consultations.length === 0">У вас немає запланованих консультацій.</p>
+    <ul v-else-if="isLoaded && consultations.length">
+      <li v-for="consultation in consultations" :key="consultation.id">
+        <router-link :to="`/consultation/${consultation.id}`">
+          Консультація з {{ isDoctor ? consultation.patient_name : consultation.doctor_name }}
+          на {{ consultation.date }} о {{ consultation.time }}
+        </router-link>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import apiClient from '@/services/apiClient';  // Імпортуємо apiClient
 
 export default {
   name: 'UserConsultationsComponent',
@@ -27,20 +27,15 @@ export default {
   },
   methods: {
     fetchUserConsultations() {
-      const token = localStorage.getItem('accessToken');
-      axios
-        .get('/api/consultations/', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+      apiClient
+        .get('consultations/')  // Використовуємо apiClient для запиту
         .then((response) => {
           this.consultations = response.data.consultations || [];  // Переконайтеся, що дані є масивом
           this.isDoctor = response.data.is_doctor;
         })
         .catch((error) => {
           console.error('Error fetching consultations:', error);
-          if (error.response.status === 401) {
+          if (error.response && error.response.status === 401) {
             this.$router.push('/login');
           }
         })
@@ -54,8 +49,6 @@ export default {
   },
 };
 </script>
-
-
 
 <style scoped>
 .user-consultations {

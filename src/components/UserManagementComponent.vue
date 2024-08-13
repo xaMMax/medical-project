@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import apiClient from '@/services/apiClient';  // Імпортуємо apiClient
 
 export default {
   name: 'UserManagementComponent',
@@ -72,20 +72,15 @@ export default {
   },
   methods: {
     fetchUsers() {
-      const token = localStorage.getItem('accessToken');
-      axios
-        .get('/api/users/', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+      apiClient
+        .get('users/')  // Використовуємо apiClient для запиту
         .then((response) => {
           this.users = response.data;
           this.checkAccess(); // Перевіряємо доступ після отримання користувачів
         })
         .catch((error) => {
           console.error('Error fetching users:', error);
-          if (error.response.status === 401) {
+          if (error.response && error.response.status === 401) {
             this.$router.push('/login');
           }
         });
@@ -109,41 +104,31 @@ export default {
       return 'user';
     },
     updateUser() {
-      const token = localStorage.getItem('accessToken');
       const updatedUser = {
         ...this.selectedUser,
         is_superuser: this.selectedUser.role === 'superuser',
         is_staff: this.selectedUser.role === 'staff',
         is_doctor: this.selectedUser.role === 'doctor',
       };
-      axios
-          .put(`/api/users/${this.selectedUser.id}/`, updatedUser, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
-          .then(() => {
-            this.selectedUser = null;
-            this.fetchUsers(); // Оновлюємо список користувачів після успішного оновлення
-          })
-          .catch((error) => {
-            console.error('Error updating user:', error);
-          });
+      apiClient
+        .put(`users/${this.selectedUser.id}/`, updatedUser)  // Використовуємо apiClient для запиту
+        .then(() => {
+          this.selectedUser = null;
+          this.fetchUsers(); // Оновлюємо список користувачів після успішного оновлення
+        })
+        .catch((error) => {
+          console.error('Error updating user:', error);
+        });
     },
     deleteUser(userId) {
-      const token = localStorage.getItem('accessToken');
-      axios
-          .delete(`/api/users/${userId}/`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
-          .then(() => {
-            this.fetchUsers(); // Оновлюємо список користувачів після успішного видалення
-          })
-          .catch((error) => {
-            console.error('Error deleting user:', error);
-          });
+      apiClient
+        .delete(`users/${userId}/`)  // Використовуємо apiClient для запиту
+        .then(() => {
+          this.fetchUsers(); // Оновлюємо список користувачів після успішного видалення
+        })
+        .catch((error) => {
+          console.error('Error deleting user:', error);
+        });
     },
   },
   created() {
