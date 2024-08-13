@@ -48,8 +48,10 @@
           <input type="file" @change="onFileChange" id="photo"/>
         </div>
 
-        <button type="submit">Зберегти зміни</button>
-        <button type="button" @click="cancelEdit">Скасувати</button>
+        <div class="buttons">
+          <button type="submit">Зберегти зміни</button>
+          <button type="button" @click="cancelEdit">Скасувати</button>
+        </div>
       </form>
     </div>
   </div>
@@ -129,23 +131,28 @@ export default {
 <style scoped>
 .user-profile {
   padding: 20px;
-  max-width: 600px;
+  max-width: 500px;
   margin: 0 auto;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
   font-size: 2rem;
   margin-bottom: 20px;
   text-align: center;
+  color: #333;
 }
 
 .profile-info p {
   font-size: 1.2rem;
   margin: 10px 0;
+  color: #555;
 }
 
 .profile-photo {
-  max-width: 150px;
+  max-width: 120px;
   margin-top: 20px;
   border-radius: 50%;
 }
@@ -158,27 +165,40 @@ label {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
+  color: #333;
 }
 
 input,
 textarea {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: #42b983;
+  box-shadow: 0 0 5px rgba(66, 185, 131, 0.5);
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
 }
 
 button {
   font-size: 1rem;
   padding: 10px 20px;
-  margin-top: 10px;
-  margin-right: 10px;
   background-color: #42b983;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {

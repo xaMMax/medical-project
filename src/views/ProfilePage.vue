@@ -48,49 +48,4 @@ h1 {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
-
-button {
-  background-color: #42b983;
-  color: white;
-  font-size: 1rem;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #369f72;
-}
-
-button[type="button"] {
-  background-color: #f44336;
-}
-
-button[type="button"]:hover {
-  background-color: #d32f2f;
-}
-
-input, textarea {
-  width: 100%;
-  padding: 10px;
-  font-size: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-bottom: 15px;
-}
-
-input:focus, textarea:focus {
-  outline: none;
-  border-color: #42b983;
-  box-shadow: 0 0 5px rgba(66, 185, 131, 0.5);
-}
-
-label {
-  font-weight: bold;
-  margin-bottom: 5px;
-  display: block;
-  color: #333;
-}
 </style>
