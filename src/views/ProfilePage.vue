@@ -5,9 +5,6 @@
       <UserProfileComponent />
     </div>
     <div class="profile-section">
-      <EditProfileComponent />
-    </div>
-    <div class="profile-section">
       <ChangePasswordComponent />
     </div>
   </div>
@@ -16,34 +13,84 @@
 <script>
 import UserProfileComponent from '@/components/UserProfileComponent.vue';
 import ChangePasswordComponent from '@/components/ChangePasswordComponent.vue';
-import EditProfileComponent from '@/components/EditProfileComponent.vue';
 
 export default {
   name: 'ProfilePage',
   components: {
     UserProfileComponent,
     ChangePasswordComponent,
-    EditProfileComponent,
   },
 };
 </script>
 
 <style scoped>
 .profile-page {
-  padding: 20px;
+  padding: 40px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #f4f4f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
   font-size: 2.5rem;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   text-align: center;
+  color: #333;
 }
 
 .profile-section {
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   padding: 20px;
-  background-color: #f9f9f9;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+button {
+  background-color: #42b983;
+  color: white;
+  font-size: 1rem;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #369f72;
+}
+
+button[type="button"] {
+  background-color: #f44336;
+}
+
+button[type="button"]:hover {
+  background-color: #d32f2f;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
   border: 1px solid #ddd;
   border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: #42b983;
+  box-shadow: 0 0 5px rgba(66, 185, 131, 0.5);
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+  color: #333;
 }
 </style>
