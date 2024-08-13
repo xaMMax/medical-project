@@ -1,7 +1,7 @@
 import axios from 'axios';
 import router from '../router';  // Оновлено шлях для імпорту маршрутизатора
 
-const API_URL = 'https://xammax.pythonanywhere.com/';
+const API_URL = 'https://xammax.pythonanywhere.com/api/';
 
 const apiClient = axios.create({
   baseURL: API_URL,
