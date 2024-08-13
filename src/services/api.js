@@ -1,5 +1,5 @@
 import axios from 'axios';
-import router from '../router';  // Оновлено шлях для імпорту маршрутизатора
+import router from '../router';
 
 const API_URL = 'https://xammax.pythonanywhere.com/api/';
 

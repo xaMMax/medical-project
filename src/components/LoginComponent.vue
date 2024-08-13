@@ -33,49 +33,48 @@ export default {
     };
   },
   methods: {
-  login() {
-    axios
-      .post('/api/login/', this.form)
-      .then((response) => {
-        console.log('Login successful:', response.data);
-        // Зберігаємо токени у localStorage
-        localStorage.setItem('accessToken', response.data.access);
-        localStorage.setItem('refreshToken', response.data.refresh);
-        localStorage.setItem('userEmail', this.form.email);
+    login() {
+      axios
+        .post('https://xammax.pythonanywhere.com/api/login/', this.form)  // Оновлений URL
+        .then((response) => {
+          console.log('Login successful:', response.data);
+          // Зберігаємо токени у localStorage
+          localStorage.setItem('accessToken', response.data.access);
+          localStorage.setItem('refreshToken', response.data.refresh);
+          localStorage.setItem('userEmail', this.form.email);
 
-        // Отримуємо список користувачів
-        return axios.get('/api/users/', {
-          headers: {
-            Authorization: `Bearer ${response.data.access}`,
-          },
+          // Отримуємо список користувачів
+          return axios.get('https://xammax.pythonanywhere.com/api/users/', {  // Оновлений URL
+            headers: {
+              Authorization: `Bearer ${response.data.access}`,
+            },
+          });
+        })
+        .then((usersResponse) => {
+          console.log('Fetched users:', usersResponse.data);
+          // Знаходимо поточного користувача за email
+          const currentUser = usersResponse.data.find(user => user.email === this.form.email);
+
+          if (currentUser) {
+            console.log('Current user found:', currentUser);
+            // Зберігаємо ролі користувача у localStorage
+            localStorage.setItem('isDoctor', currentUser.is_doctor);
+            localStorage.setItem('isSuperuser', currentUser.is_superuser);
+            localStorage.setItem('isStaff', currentUser.is_staff);
+
+            // Перенаправляємо користувача на dashboard після успішного входу
+            this.$router.push('/dashboard');
+          } else {
+            this.errorMessage = 'Користувача не знайдено.';
+            console.error('User not found');
+          }
+        })
+        .catch((error) => {
+          console.error('Error logging in or fetching users:', error);
+          this.errorMessage = 'Неправильний email або пароль. Спробуйте ще раз.';
         });
-      })
-      .then((usersResponse) => {
-        console.log('Fetched users:', usersResponse.data);
-        // Знаходимо поточного користувача за email
-        const currentUser = usersResponse.data.find(user => user.email === this.form.email);
-
-        if (currentUser) {
-          console.log('Current user found:', currentUser);
-          // Зберігаємо ролі користувача у localStorage
-          localStorage.setItem('isDoctor', currentUser.is_doctor);
-          localStorage.setItem('isSuperuser', currentUser.is_superuser);
-          localStorage.setItem('isStaff', currentUser.is_staff);
-
-          // Перенаправляємо користувача на dashboard після успішного входу
-          this.$router.push('/dashboard');
-        } else {
-          this.errorMessage = 'Користувача не знайдено.';
-          console.error('User not found');
-        }
-      })
-      .catch((error) => {
-        console.error('Error logging in or fetching users:', error);
-        this.errorMessage = 'Неправильний email або пароль. Спробуйте ще раз.';
-      });
+    },
   },
-},
-
 };
 </script>
 
