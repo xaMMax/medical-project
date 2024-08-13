@@ -20,25 +20,37 @@
 <script>
 export default {
   name: 'App',
-  computed: {
-    isAuthenticated() {
-      return !!localStorage.getItem('accessToken');
-    },
+  data() {
+    return {
+      isAuthenticated: !!localStorage.getItem('accessToken'),
+    };
   },
   methods: {
     logout() {
       // Видаляємо токени з localStorage
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
+
+      // Оновлюємо стан автентифікації
+      this.isAuthenticated = false;
+
+      // Перенаправляємо користувача на сторінку логіну
       this.$router.push('/login');
     },
-  },
-  watch: {
-    $route(to, from) {
-      // Перевіряємо статус автентифікації при кожній зміні маршруту
+    checkAuthStatus() {
+      // Оновлюємо стан автентифікації при кожному вході або оновленні токена
       this.isAuthenticated = !!localStorage.getItem('accessToken');
-    },
+    }
   },
+  created() {
+    // Перевірка автентифікації при створенні компонента
+    this.checkAuthStatus();
+    // Додаємо глобальний хук перед кожним переходом
+    this.$router.beforeEach((to, from, next) => {
+      this.checkAuthStatus();
+      next();
+    });
+  }
 };
 </script>
 
