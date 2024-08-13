@@ -23,7 +23,7 @@ module.exports = defineConfig({
       '/api': {
         target: 'https://xammax.pythonanywhere.com',  // Ваш бекенд сервер
         changeOrigin: true,
-        secure: true, // Якщо бекенд має SSL
+        secure: false, // Якщо бекенд має SSL
         pathRewrite: { '^/api': '' }, // Переписує шлях, видаляючи префікс /api
       }
     }
