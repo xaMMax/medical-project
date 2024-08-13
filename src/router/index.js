@@ -5,7 +5,7 @@ import ProfilePage from "@/views/ProfilePage.vue";
 import ConsultationDetails from "@/views/ConsultationDetails.vue";
 import DashboardPage from "@/views/DashboardPage.vue";
 import ConsultationsListComponent from "@/components/ConsultationsListComponent.vue";
-import RegisterComponent from "@/components/RegisterComponent.vue"; // Імпортуємо компонент
+import RegisterComponent from "@/components/RegisterComponent.vue";
 
 const routes = [
   {
@@ -33,14 +33,13 @@ const routes = [
   {
     path: '/consultations',
     name: 'consultationsList',
-    component: ConsultationsListComponent, // Додаємо маршрут для списку консультацій
+    component: ConsultationsListComponent,
     meta: { requiresAuth: true },
   },
   {
     path: '/register',
     name: 'register',
     component: RegisterComponent,
-
   },
   {
     path: '/consultations/:id',
