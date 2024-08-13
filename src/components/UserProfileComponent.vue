@@ -1,44 +1,62 @@
 <template>
   <div class="user-profile">
     <h2>Профіль користувача</h2>
-    <form @submit.prevent="updateProfile">
-      <div class="form-group">
-        <label for="username">Ім'я користувача</label>
-        <input type="text" v-model="profile.username" id="username" required />
-      </div>
 
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" v-model="profile.email" id="email" required />
+    <div v-if="!isEditing">
+      <div class="profile-info">
+        <p><strong>Ім'я користувача:</strong> {{ profile.username }}</p>
+        <p><strong>Email:</strong> {{ profile.email }}</p>
+        <p><strong>Телефон:</strong> {{ profile.phone || 'Не вказано' }}</p>
+        <p><strong>Адреса:</strong> {{ profile.address || 'Не вказано' }}</p>
+        <p><strong>Біографія:</strong> {{ profile.bio || 'Не вказано' }}</p>
+        <div v-if="profile.photo">
+          <img :src="profile.photo" alt="Фото профілю" class="profile-photo" />
+        </div>
       </div>
+      <button @click="isEditing = true">Редагувати профіль</button>
+    </div>
 
-      <div class="form-group">
-        <label for="phone">Телефон</label>
-        <input type="tel" v-model="profile.phone" id="phone" />
-      </div>
+    <div v-else>
+      <form @submit.prevent="updateProfile">
+        <div class="form-group">
+          <label for="username">Ім'я користувача</label>
+          <input type="text" v-model="profile.username" id="username" required />
+        </div>
 
-      <div class="form-group">
-        <label for="address">Адреса</label>
-        <input type="text" v-model="profile.address" id="address" />
-      </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" v-model="profile.email" id="email" required />
+        </div>
 
-      <div class="form-group">
-        <label for="bio">Біографія</label>
-        <textarea v-model="profile.bio" id="bio" rows="4"></textarea>
-      </div>
+        <div class="form-group">
+          <label for="phone">Телефон</label>
+          <input type="tel" v-model="profile.phone" id="phone" />
+        </div>
 
-      <div class="form-group">
-        <label for="photo">Фото профілю</label>
-        <input type="file" @change="onFileChange" id="photo" />
-      </div>
+        <div class="form-group">
+          <label for="address">Адреса</label>
+          <input type="text" v-model="profile.address" id="address" />
+        </div>
 
-      <button type="submit">Оновити профіль</button>
-    </form>
+        <div class="form-group">
+          <label for="bio">Біографія</label>
+          <textarea v-model="profile.bio" id="bio" rows="4"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="photo">Фото профілю</label>
+          <input type="file" @change="onFileChange" id="photo"/>
+        </div>
+
+        <button type="submit">Зберегти зміни</button>
+        <button type="button" @click="cancelEdit">Скасувати</button>
+      </form>
+    </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import apiClient from '@/services/apiClient'; // Імпортуємо apiClient
 
 export default {
   name: 'UserProfileComponent',
@@ -52,29 +70,26 @@ export default {
         bio: '',
         photo: null,
       },
+      isEditing: false, // Додаємо стан редагування
+      originalProfile: null, // Зберігаємо оригінальні дані для скасування змін
     };
   },
   methods: {
     fetchUserProfile() {
-      const token = localStorage.getItem('accessToken');
-      axios
-        .get('/api/profile/', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          this.profile = response.data;
-        })
-        .catch((error) => {
-          console.error('Error fetching profile:', error);
-          if (error.response.status === 401) {
-            this.$router.push('/login');
-          }
-        });
+      apiClient
+          .get('profile/')
+          .then((response) => {
+            this.profile = response.data;
+            this.originalProfile = {...response.data}; // Зберігаємо оригінальні дані
+          })
+          .catch((error) => {
+            console.error('Error fetching profile:', error);
+            if (error.response && error.response.status === 401) {
+              this.$router.push('/login');
+            }
+          });
     },
     updateProfile() {
-      const token = localStorage.getItem('accessToken');
       const formData = new FormData();
 
       for (const key in this.profile) {
@@ -85,22 +100,26 @@ export default {
         }
       }
 
-      axios
-        .put('/api/profile/', formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-          },
-        })
-        .then(() => {
-          alert('Профіль оновлено успішно');
-        })
-        .catch((error) => {
-          console.error('Error updating profile:', error);
-        });
+      apiClient
+          .put('profile/', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+          .then(() => {
+            alert('Профіль оновлено успішно');
+            this.isEditing = false; // Виходимо з режиму редагування після успішного оновлення
+          })
+          .catch((error) => {
+            console.error('Error updating profile:', error);
+          });
     },
     onFileChange(e) {
       this.profile.photo = e.target.files[0];
+    },
+    cancelEdit() {
+      this.isEditing = false;
+      this.profile = {...this.originalProfile}; // Повертаємо оригінальні дані
     },
   },
   created() {
@@ -112,11 +131,25 @@ export default {
 <style scoped>
 .user-profile {
   padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 h2 {
   font-size: 2rem;
   margin-bottom: 20px;
+  text-align: center;
+}
+
+.profile-info p {
+  font-size: 1.2rem;
+  margin: 10px 0;
+}
+
+.profile-photo {
+  max-width: 150px;
+  margin-top: 20px;
+  border-radius: 50%;
 }
 
 .form-group {
@@ -141,6 +174,8 @@ textarea {
 button {
   font-size: 1rem;
   padding: 10px 20px;
+  margin-top: 10px;
+  margin-right: 10px;
   background-color: #42b983;
   color: white;
   border: none;
@@ -150,5 +185,13 @@ button {
 
 button:hover {
   background-color: #369f72;
+}
+
+button[type="button"] {
+  background-color: #f44336;
+}
+
+button[type="button"]:hover {
+  background-color: #d32f2f;
 }
 </style>
