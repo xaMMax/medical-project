@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://xammax.pythonanywhere.com/api/';  // URL до вашого бекенду на Django з префіксом /api/
+const API_URL = 'https://xammax.pythonanywhere.com/';  // URL до вашого бекенду на Django з префіксом /api/
 
 const apiClient = axios.create({
   baseURL: API_URL,

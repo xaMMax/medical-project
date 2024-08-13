@@ -1,90 +1,85 @@
 <template>
-  <div class="dashboard-container">
-    <h1>{{ username }} Dashboard</h1>
-
-    <!-- Умовне відображення UserList тільки для адміністратора -->
-    <UserList v-if="is_superuser" @userCreated="refreshUserList" ref="userList"/>
-
-    <!-- Кнопка створення нового користувача тільки для адміністратора -->
-    <div class="create-user-section" v-if="isAdmin">
-      <button @click="openCreateUserModal">Create New User</button>
-    </div>
-
-    <!-- Модальне вікно створення користувача -->
-    <div v-if="showCreateUserModal" class="modal">
-      <div class="modal-content">
-        <h3>Create User</h3>
-        <UserForm
-            :form="newUser"
-            submit-button-text="Create User"
-            @submit="createUser"
-        />
-        <button @click="closeCreateUserModal" class="cancel-button">Cancel</button>
+  <div class="dashboard-page">
+    <h1>Панель управління</h1>
+    <div class="grid-container">
+      <div class="grid-item">
+        <UserConsultationsComponent />
+      </div>
+      <div class="grid-item">
+        <MessagesComponent />
+      </div>
+      <div class="grid-item" v-if="isDoctor">
+        <CreateConsultationComponent />
+      </div>
+      <div class="grid-item" v-if="isSuperuser || isStaff">
+        <UserManagementComponent />
       </div>
     </div>
-
-    <!-- Панель консультацій доступна для всіх користувачів -->
-    <ConsultationList/>
   </div>
 </template>
 
 <script>
-import UserList from '@/components/UserList.vue';
-import ConsultationList from "@/components/ConsultationList.vue";
-import UserForm from '@/components/UserForm.vue';
-import apiClient from '@/services/api';
+import UserConsultationsComponent from '@/components/UserConsultationsComponent.vue';
+import MessagesComponent from '@/components/MessagesComponent.vue';
+import CreateConsultationComponent from '@/components/CreateConsultationComponent.vue';
+import UserManagementComponent from '@/components/UserManagementComponent.vue';
 
 export default {
   name: 'DashboardPage',
   components: {
-    UserList,
-    ConsultationList,
-    UserForm,
+    UserConsultationsComponent,
+    MessagesComponent,
+    CreateConsultationComponent,
+    UserManagementComponent,
   },
   data() {
     return {
-      username: '',
-      isAdmin: false, // Початкове значення
-      showCreateUserModal: false,
-      newUser: {
-        username: '',
-        email: '',
-      },
+      isDoctor: false,
+      isSuperuser: false,
+      isStaff: false,
     };
   },
-  async created() {
-    await this.checkUserRole(); // Перевірка ролі користувача при завантаженні компонента
+  created() {
+    this.checkUserRoles();
   },
   methods: {
-    async checkUserRole() {
-      try {
-        const response = await apiClient.get('/auth/user/'); // Передбачаємо, що API повертає дані користувача
-        this.username = response.data.username;
-        this.isAdmin = response.data.is_superuser; // Використовуємо поле is_superuser для перевірки ролі
-      } catch (error) {
-        console.error('Failed to check user role', error);
-      }
-    },
-    openCreateUserModal() {
-      this.showCreateUserModal = true;
-    },
-    closeCreateUserModal() {
-      this.showCreateUserModal = false;
-    },
-    async createUser(formData) {
-      try {
-        const response = await apiClient.post('/users/', formData);
-        console.log('User created:', response.data);
-        this.showCreateUserModal = false;
-        this.refreshUserList(); // Оновлюємо список користувачів після створення нового користувача
-      } catch (error) {
-        console.error('Failed to create user', error.response ? error.response.data : error.message);
-      }
-    },
-    refreshUserList() {
-      // Викликаємо метод для оновлення списку користувачів у компоненті UserList
-      this.$refs.userList.fetchUsers();
+    checkUserRoles() {
+      // Логіка для перевірки ролей користувача
+      const user = {
+        is_doctor: localStorage.getItem('isDoctor') === 'true',
+        is_superuser: localStorage.getItem('isSuperuser') === 'true',
+        is_staff: localStorage.getItem('isStaff') === 'true',
+      };
+
+      this.isDoctor = user.is_doctor;
+      this.isSuperuser = user.is_superuser;
+      this.isStaff = user.is_staff;
     },
   },
 };
 </script>
+
+<style scoped>
+.dashboard-page {
+  padding: 20px;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 20px;
+}
+
+.grid-item {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+</style>

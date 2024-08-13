@@ -1,37 +1,52 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from '@/views/HomePage.vue';
-import Login from '@/views/LoginPage.vue';
-import Register from '@/views/RegisterPage.vue';
-import Profile from '@/views/ProfilePage.vue';
-import Dashboard from '@/views/DashboardPage.vue'; 
+import HomePage from "@/views/HomePage.vue";
+import LoginPage from "@/views/LoginPage.vue";
+import ProfilePage from "@/views/ProfilePage.vue";
+import ConsultationDetails from "@/views/ConsultationDetails.vue";
+import DashboardPage from "@/views/DashboardPage.vue";
+import ConsultationsListComponent from "@/components/ConsultationsListComponent.vue";
+import RegisterComponent from "@/components/RegisterComponent.vue"; // Імпортуємо компонент
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: Home,
+    component: HomePage,
   },
   {
     path: '/login',
     name: 'login',
-    component: Login,
-  },
-  {
-    path: '/register',
-    name: 'register',
-    component: Register,
+    component: LoginPage,
   },
   {
     path: '/profile',
     name: 'profile',
-    component: Profile,
+    component: ProfilePage,
     meta: { requiresAuth: true },
   },
   {
     path: '/dashboard',
     name: 'dashboard',
-    component: Dashboard,
-    meta: { requiresAuth: true }, // Вимагає автентифікації
+    component: DashboardPage,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/consultations',
+    name: 'consultationsList',
+    component: ConsultationsListComponent, // Додаємо маршрут для списку консультацій
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: RegisterComponent,
+
+  },
+  {
+    path: '/consultations/:id',
+    name: 'consultationDetails',
+    component: ConsultationDetails,
+    meta: { requiresAuth: true },
   }
 ];
 
@@ -43,12 +58,12 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
     const isAuthenticated = !!localStorage.getItem('accessToken');
-  
+
     if (requiresAuth && !isAuthenticated) {
       next('/login');
     } else {
       next();
     }
-  });  
+});
 
 export default router;
