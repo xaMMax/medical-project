@@ -14,6 +14,9 @@
       <div class="grid-item" v-if="isSuperuser || isStaff">
         <UserManagementComponent />
       </div>
+      <div class="grid-item">
+        <DoctorList />
+      </div>
     </div>
   </div>
 </template>
@@ -23,6 +26,7 @@ import UserConsultationsComponent from '@/components/UserConsultationsComponent.
 import MessagesComponent from '@/components/MessagesComponent.vue';
 import CreateConsultationComponent from '@/components/CreateConsultationComponent.vue';
 import UserManagementComponent from '@/components/UserManagementComponent.vue';
+import DoctorList from '@/components/DoctorList.vue'; // Імпортуємо новий компонент
 
 export default {
   name: 'DashboardPage',
@@ -31,6 +35,7 @@ export default {
     MessagesComponent,
     CreateConsultationComponent,
     UserManagementComponent,
+    DoctorList, // Підключаємо новий компонент
   },
   data() {
     return {

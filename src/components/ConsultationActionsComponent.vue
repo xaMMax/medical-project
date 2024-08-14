@@ -7,13 +7,13 @@
 </template>
 
 <script>
-import apiClient from '@/services/apiClient';  // Імпортуємо apiClient
+import apiClient from '@/services/apiClient';
 
 export default {
   name: 'ConsultationActionsComponent',
   props: {
     consultationId: {
-      type: Number,
+      type: [Number, String],
       required: true,
     },
     isDoctor: {
@@ -29,23 +29,25 @@ export default {
     isAuthorized() {
       return this.isDoctor || this.isSuperuser;
     },
+    numericConsultationId() {
+      return Number(this.consultationId);
+    }
   },
   methods: {
     editConsultation() {
-      // Припустимо, що редагування може бути через форму або іншу дію.
       alert('Редагування консультації ще не налаштоване.');
     },
     deleteConsultation() {
       if (confirm('Ви впевнені, що хочете видалити цю консультацію?')) {
         apiClient
-          .delete(`consultations/${this.consultationId}/`)
-          .then(() => {
-            this.$router.push('/dashboard');
-          })
-          .catch((error) => {
-            console.error('Error deleting consultation:', error);
-            alert('Сталася помилка при видаленні консультації.');
-          });
+            .delete(`consultations/${this.numericConsultationId}/`)
+            .then(() => {
+              this.$router.push('/dashboard');
+            })
+            .catch((error) => {
+              console.error('Error deleting consultation:', error);
+              alert('Сталася помилка при видаленні консультації.');
+            });
       }
     },
   },

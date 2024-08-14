@@ -52,7 +52,19 @@ const routes = [
     path: '/:pathMatch(.*)*', // Доданий маршрут для обробки 404
     name: 'not-found',
     component: NotFoundPage,
-  }
+  },
+{
+  path: '/doctors',
+  name: 'DoctorList',
+  component: () => import('@/components/DoctorList.vue')
+},
+{
+  path: '/send-message/:recipientId',
+  name: 'SendMessage',
+  component: () => import('@/components/SendMessage.vue'),
+  props: true
+},
+
 ];
 
 const router = createRouter({

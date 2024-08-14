@@ -1,51 +1,90 @@
 <template>
   <div class="user-consultations">
     <h2>Консультації для {{ isDoctor ? 'Доктора' : 'Пацієнта' }}</h2>
-    <p v-if="isLoaded && consultations.length === 0">У вас немає запланованих консультацій.</p>
-    <ul v-else-if="isLoaded && consultations.length">
-      <li v-for="consultation in consultations" :key="consultation.id">
-        <router-link :to="`/consultation/${consultation.id}`">
+    <p v-if="isLoaded && filteredConsultations.length === 0">У вас немає запланованих консультацій.</p>
+    <ul v-else-if="isLoaded && filteredConsultations.length">
+      <li v-for="consultation in filteredConsultations" :key="consultation.id">
+          <router-link :to="{ name: 'consultationDetails', params: { id: consultation.id } }">
           Консультація з {{ isDoctor ? consultation.patient_name : consultation.doctor_name }}
           на {{ consultation.date }} о {{ consultation.time }}
         </router-link>
       </li>
     </ul>
+    <p v-else>Завантаження даних...</p>
   </div>
 </template>
 
 <script>
-import apiClient from '@/services/apiClient';  // Імпортуємо apiClient
+import apiClient from '@/services/apiClient';
 
 export default {
   name: 'UserConsultationsComponent',
   data() {
     return {
-      consultations: [],  // Ініціалізуйте як порожній масив
-      isDoctor: false,    // Визначає, чи користувач є доктором
-      isLoaded: false,    // Позначка для завершення завантаження даних
+      consultations: [],
+      users: [],
+      currentUser: null,
+      isLoaded: false,
     };
   },
+  computed: {
+    isDoctor() {
+      return this.currentUser && this.currentUser.is_doctor;
+    },
+    filteredConsultations() {
+      if (!this.currentUser) return [];
+      return this.consultations.filter(consultation =>
+        consultation.doctor === this.currentUser.id || consultation.patient === this.currentUser.id
+      ).map(consultation => ({
+        ...consultation,
+        id: consultation.id.toString() // переконайтеся, що id - це рядок
+      }));
+    }
+  },
   methods: {
-    fetchUserConsultations() {
+    fetchConsultations() {
       apiClient
-        .get('consultations/')  // Використовуємо apiClient для запиту
+        .get('consultations/')
         .then((response) => {
-          this.consultations = response.data.consultations || [];  // Переконайтеся, що дані є масивом
-          this.isDoctor = response.data.is_doctor;
+          this.consultations = response.data;
+          this.fetchUsers();
         })
-        .catch((error) => {
-          console.error('Error fetching consultations:', error);
-          if (error.response && error.response.status === 401) {
-            this.$router.push('/login');
-          }
-        })
-        .finally(() => {
-          this.isLoaded = true;  // Оновлення позначки після завершення завантаження
-        });
+          .catch((error) => {
+            console.error('Error fetching consultations:', error);
+            if (error.response && error.response.status === 401) {
+              this.$router.push('/login');
+            }
+          });
+    },
+    fetchUsers() {
+      apiClient
+          .get('users/')
+          .then((response) => {
+            this.users = response.data;
+            this.currentUser = this.users.find(user => user.email === localStorage.getItem('userEmail'));
+            this.mapUserDetailsToConsultations();
+          })
+          .catch((error) => {
+            console.error('Error fetching users:', error);
+          })
+          .finally(() => {
+            this.isLoaded = true;
+          });
+    },
+    mapUserDetailsToConsultations() {
+      this.consultations = this.consultations.map(consultation => {
+        const doctor = this.users.find(user => user.id === consultation.doctor);
+        const patient = this.users.find(user => user.id === consultation.patient);
+        return {
+          ...consultation,
+          doctor_name: doctor ? `${doctor.first_name} ${doctor.last_name}` : 'Не вказано',
+          patient_name: patient ? `${patient.first_name} ${patient.last_name}` : 'Не вказано',
+        };
+      });
     },
   },
   created() {
-    this.fetchUserConsultations();
+    this.fetchConsultations();
   },
 };
 </script>

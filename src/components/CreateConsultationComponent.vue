@@ -3,10 +3,13 @@
     <h2>Створити нову консультацію</h2>
     <form @submit.prevent="submitConsultation">
       <div class="form-group">
+        <label for="doctor">Лікар</label>
+        <p id="doctor"> {{ doctorName }} (ID: {{ doctorId }}) </p>
+
         <label for="patient">Пацієнт</label>
         <select v-model="form.patient" id="patient" required>
           <option v-for="patient in patients" :key="patient.id" :value="patient.id">
-            {{ patient.name }}
+            {{ patient.first_name }} {{ patient.last_name }}
           </option>
         </select>
       </div>
@@ -28,11 +31,12 @@
 
       <button type="submit">Створити консультацію</button>
     </form>
+    <p v-if="successMessage" class="success">{{ successMessage }}</p>
   </div>
 </template>
 
 <script>
-import apiClient from '@/services/apiClient';  // Імпортуємо apiClient
+import apiClient from '@/services/apiClient';
 
 export default {
   name: 'CreateConsultationComponent',
@@ -45,27 +49,61 @@ export default {
         notes: '',
       },
       patients: [],
+      doctorId: null,  // Зберігаємо ID доктора
+      doctorName: '',  // Зберігаємо ім'я доктора
+      successMessage: '',  // Повідомлення про успіх
     };
   },
   methods: {
-    fetchPatients() {
+    fetchPatientsAndDoctor() {
       apiClient
-        .get('users/')  // Використовуємо apiClient для запиту
+        .get('users/')
         .then((response) => {
+          // Фільтруємо тільки пацієнтів
           this.patients = response.data.filter(user => !user.is_doctor && !user.is_superuser && !user.is_staff);
+
+          // Зберігаємо ID та ім'я доктора з першого знайденого користувача, який є доктором
+          const doctor = response.data.find(user => user.is_doctor);
+          if (doctor) {
+            this.doctorId = doctor.id;
+            this.doctorName = `${doctor.first_name} ${doctor.last_name}`;
+          } else {
+            console.error('Доктор не знайдений у відповіді сервера');
+          }
         })
         .catch((error) => {
-          console.error('Error fetching patients:', error);
+          console.error('Error fetching patients and doctor:', error);
           if (error.response && error.response.status === 401) {
             this.$router.push('/login');
           }
         });
     },
     submitConsultation() {
+      if (!this.doctorId) {
+        console.error('Доктор не знайдений у відповіді сервера');
+        return;
+      }
+
+      const consultationData = {
+        ...this.form,
+        doctor: this.doctorId,  // Додаємо ID доктора до даних для відправки
+      };
+
       apiClient
-        .post('consultations/', this.form)  // Використовуємо apiClient для запиту
+        .post('consultations/', consultationData)
         .then(() => {
-          this.$router.push('/dashboard'); // Після успішного створення консультації перенаправляємо на Dashboard
+          this.successMessage = 'Консультацію успішно створено!';
+
+          // Очищуємо форму після успішного створення консультації
+          this.form.patient = '';
+          this.form.date = '';
+          this.form.time = '';
+          this.form.notes = '';
+
+          // Очищаємо повідомлення через 5 секунд
+          setTimeout(() => {
+            this.successMessage = '';
+          }, 5000);
         })
         .catch((error) => {
           console.error('Error creating consultation:', error);
@@ -73,7 +111,7 @@ export default {
     },
   },
   created() {
-    this.fetchPatients(); // Завантажуємо список пацієнтів при створенні компонента
+    this.fetchPatientsAndDoctor();  // Завантажуємо список пацієнтів і доктора під час створення компонента
   },
 };
 </script>
@@ -120,5 +158,11 @@ button {
 
 button:hover {
   background-color: #369f72;
+}
+
+.success {
+  color: #4caf50;
+  margin-top: 15px;
+  font-weight: bold;
 }
 </style>
