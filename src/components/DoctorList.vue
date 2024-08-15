@@ -5,8 +5,8 @@
       <li v-for="user in filteredUsers" :key="user.id">
         <div class="user-info">
           <img v-if="user.photo" :src="user.photo" alt="Фото користувача" class="user-photo"/>
-          <p><strong>{{ user.first_name }} {{ user.last_name }}</strong></p><br>
-          <p> {{ user.email }} </p>
+          <p><strong>{{ user.first_name }} {{ user.last_name }}</strong></p>
+          <p><br> {{ user.email }} </p>
           <button @click="sendMessage(user.id)">Написати повідомлення</button>
         </div>
       </li>
