@@ -6,7 +6,7 @@
       <li v-for="message in messages" :key="message.id" :class="{ unread: !message.is_read }">
         <strong>Від {{ message.sender_name }}</strong> до {{ message.recipient_name }}: {{ message.content }}
         <span class="timestamp">{{ formatDate(message.created_at) }}</span>
-        <button @click="replyToMessage(message.sender)">Відповісти</button>
+        <button v-if="message.sender !== message.recipient" @click="replyToMessage(message.sender)">Відповісти</button>
       </li>
     </ul>
   </div>
@@ -20,36 +20,47 @@ export default {
   data() {
     return {
       messages: [],
+      currentUserId: null,
     };
   },
   methods: {
     fetchMessages() {
       apiClient
-          .get('/messages/')
-          .then((response) => {
-            const messages = response.data;
-            const userRequests = messages.map(message => {
-              return Promise.all([
-                apiClient.get(`/users/${message.sender}/`),
-                apiClient.get(`/users/${message.recipient}/`)
-              ]).then(([senderResponse, recipientResponse]) => {
-                message.sender_name = `${senderResponse.data.first_name} ${senderResponse.data.last_name}`;
-                message.recipient_name = `${recipientResponse.data.first_name} ${recipientResponse.data.last_name}`;
-                return message;
-              });
+        .get('/messages/')
+        .then((response) => {
+          const messages = response.data;
+          const userRequests = messages.map(message => {
+            return Promise.all([
+              apiClient.get(`/users/${message.sender}/`),
+              apiClient.get(`/users/${message.recipient}/`)
+            ]).then(([senderResponse, recipientResponse]) => {
+              message.sender_name = `${senderResponse.data.first_name} ${senderResponse.data.last_name}`;
+              message.recipient_name = `${recipientResponse.data.first_name} ${recipientResponse.data.last_name}`;
+              return message;
             });
-            return Promise.all(userRequests);
-          })
-          .then((messagesWithNames) => {
-            this.messages = messagesWithNames;
-            console.log(this.messages);
-          })
-          .catch((error) => {
-            console.error('Error fetching messages:', error);
-            if (error.response && error.response.status === 401) {
-              this.$router.push('/login');
-            }
           });
+          return Promise.all(userRequests);
+        })
+        .then((messagesWithNames) => {
+          this.messages = messagesWithNames;
+          console.log(this.messages);
+        })
+        .catch((error) => {
+          console.error('Error fetching messages:', error);
+          if (error.response && error.response.status === 401) {
+            this.$router.push('/login');
+          }
+        });
+    },
+    fetchCurrentUser() {
+      apiClient
+        .get('/profile/')
+        .then((response) => {
+          this.currentUserId = response.data.id;
+        })
+        .catch((error) => {
+          console.error('Error fetching current user:', error);
+        });
     },
     formatDate(dateString) {
       const options = {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'};
@@ -61,9 +72,11 @@ export default {
   },
   created() {
     this.fetchMessages();
+    this.fetchCurrentUser(); // Завантаження даних про поточного користувача
   },
 };
 </script>
+
 
 <style scoped>
 .messages {
