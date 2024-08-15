@@ -21,7 +21,7 @@ module.exports = defineConfig({
   devServer: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8000/',
+        target: 'https://xammax.pythonanywhere.com/api/',
         changeOrigin: true,
         secure: false,
         pathRewrite: { '^/api': '' },
