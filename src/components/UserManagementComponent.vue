@@ -101,6 +101,7 @@ export default {
       if (user.is_superuser) return 'superuser';
       if (user.is_staff) return 'staff';
       if (user.is_doctor) return 'doctor';
+      if (user.is_user) return 'user';
       return 'user';
     },
     updateUser() {
@@ -109,6 +110,7 @@ export default {
         is_superuser: this.selectedUser.role === 'superuser',
         is_staff: this.selectedUser.role === 'staff',
         is_doctor: this.selectedUser.role === 'doctor',
+        is_user: this.selectedUser.role === 'user',
       };
       apiClient
         .put(`users/${this.selectedUser.id}/`, updatedUser)  // Використовуємо apiClient для запиту

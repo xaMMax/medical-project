@@ -64,7 +64,6 @@ const routes = [
   component: () => import('@/components/SendMessage.vue'),
   props: true
 },
-
 ];
 
 const router = createRouter({

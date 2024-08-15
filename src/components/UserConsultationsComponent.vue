@@ -1,15 +1,31 @@
 <template>
   <div class="user-consultations">
     <h2>Консультації для {{ isDoctor ? 'Доктора' : 'Пацієнта' }}</h2>
+
+    <!-- Консультації, де користувач є лікарем -->
+    <div v-if="isDoctor">
+      <h3>Консультації, де ви лікар:</h3>
+      <p v-if="isLoaded && doctorConsultations.length === 0">У вас немає запланованих консультацій як лікар.</p>
+      <ul v-else-if="isLoaded && doctorConsultations.length">
+        <li v-for="consultation in doctorConsultations" :key="consultation.id">
+          <router-link :to="{ name: 'consultationDetails', params: { id: consultation.id } }">
+            Консультація з {{ consultation.patient_name }} на {{ consultation.date }} о {{ consultation.time }}
+          </router-link>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Загальний список консультацій -->
+    <h3>Усі ваші консультації:</h3>
     <p v-if="isLoaded && filteredConsultations.length === 0">У вас немає запланованих консультацій.</p>
     <ul v-else-if="isLoaded && filteredConsultations.length">
       <li v-for="consultation in filteredConsultations" :key="consultation.id">
-          <router-link :to="{ name: 'consultationDetails', params: { id: consultation.id } }">
-          Консультація з {{ isDoctor ? consultation.patient_name : consultation.doctor_name }}
-          на {{ consultation.date }} о {{ consultation.time }}
+        <router-link :to="{ name: 'consultationDetails', params: { id: consultation.id } }">
+          Консультація з {{ isDoctor ? consultation.patient_name : consultation.doctor_name }} на {{ consultation.date }} о {{ consultation.time }}
         </router-link>
       </li>
     </ul>
+
     <p v-else>Завантаження даних...</p>
   </div>
 </template>
@@ -37,39 +53,46 @@ export default {
         consultation.doctor === this.currentUser.id || consultation.patient === this.currentUser.id
       ).map(consultation => ({
         ...consultation,
-        id: consultation.id.toString() // переконайтеся, що id - це рядок
+        id: consultation.id.toString()
+      }));
+    },
+    doctorConsultations() {
+      if (!this.currentUser) return [];
+      return this.consultations.filter(consultation => consultation.doctor === this.currentUser.id).map(consultation => ({
+        ...consultation,
+        id: consultation.id.toString()
       }));
     }
   },
   methods: {
     fetchConsultations() {
       apiClient
-        .get('consultations/')
+        .get('/consultations/')
         .then((response) => {
           this.consultations = response.data;
           this.fetchUsers();
         })
-          .catch((error) => {
-            console.error('Error fetching consultations:', error);
-            if (error.response && error.response.status === 401) {
-              this.$router.push('/login');
-            }
-          });
+        .catch((error) => {
+          console.error('Error fetching consultations:', error);
+          if (error.response && error.response.status === 401) {
+            this.$router.push('/login');
+          }
+        });
     },
     fetchUsers() {
       apiClient
-          .get('users/')
-          .then((response) => {
-            this.users = response.data;
-            this.currentUser = this.users.find(user => user.email === localStorage.getItem('userEmail'));
-            this.mapUserDetailsToConsultations();
-          })
-          .catch((error) => {
-            console.error('Error fetching users:', error);
-          })
-          .finally(() => {
-            this.isLoaded = true;
-          });
+        .get('/users/')
+        .then((response) => {
+          this.users = response.data;
+          this.currentUser = this.users.find(user => user.email === localStorage.getItem('userEmail'));
+          this.mapUserDetailsToConsultations();
+        })
+        .catch((error) => {
+          console.error('Error fetching users:', error);
+        })
+        .finally(() => {
+          this.isLoaded = true;
+        });
     },
     mapUserDetailsToConsultations() {
       this.consultations = this.consultations.map(consultation => {
@@ -94,7 +117,7 @@ export default {
   padding: 20px;
 }
 
-h2 {
+h2, h3 {
   font-size: 2rem;
   margin-bottom: 20px;
 }

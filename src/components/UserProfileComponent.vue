@@ -8,11 +8,12 @@
           <img :src="profile.photo" alt="Фото профілю" class="profile-photo" />
         </div>
         <p><strong>Ім'я користувача:</strong> {{ profile.username }}</p>
+        <p><strong>Ім'я:</strong> {{ profile.first_name || 'Не вказано' }}</p>
+        <p><strong>Прізвище:</strong> {{ profile.last_name || 'Не вказано' }}</p>
         <p><strong>Email:</strong> {{ profile.email }}</p>
         <p><strong>Телефон:</strong> {{ profile.phone || 'Не вказано' }}</p>
         <p><strong>Адреса:</strong> {{ profile.address || 'Не вказано' }}</p>
         <p><strong>Біографія:</strong> {{ profile.bio || 'Не вказано' }}</p>
-
       </div>
       <div class="buttons">
         <button @click="isEditingData = true">Редагувати дані</button>
@@ -26,6 +27,16 @@
         <div class="form-group">
           <label for="username">Ім'я користувача</label>
           <input type="text" v-model="profile.username" id="username" required />
+        </div>
+
+        <div class="form-group">
+          <label for="first_name">Ім'я</label>
+          <input type="text" v-model="profile.first_name" id="first_name" />
+        </div>
+
+        <div class="form-group">
+          <label for="last_name">Прізвище</label>
+          <input type="text" v-model="profile.last_name" id="last_name" />
         </div>
 
         <div class="form-group">
@@ -81,11 +92,17 @@ export default {
     return {
       profile: {
         username: '',
+        first_name: '',
+        last_name: '',
         email: '',
         phone: '',
         address: '',
         bio: '',
         photo: null,
+        is_doctor: false,
+        is_user: false,
+        is_superuser: false,
+        is_staff: false,
       },
       isEditingData: false,
       isEditingPhoto: false,
@@ -108,10 +125,16 @@ export default {
     updateProfileData() {
       const data = {
         username: this.profile.username,
+        first_name: this.profile.first_name,
+        last_name: this.profile.last_name,
         email: this.profile.email,
         phone: this.profile.phone,
         address: this.profile.address,
         bio: this.profile.bio,
+        is_doctor: this.profile.is_doctor,
+        is_user: this.profile.is_user,
+        is_superuser: this.profile.is_superuser,
+        is_staff: this.profile.is_staff,
       };
 
       apiClient
@@ -126,35 +149,41 @@ export default {
         });
     },
     updateProfilePhoto() {
-  if (!this.profile.photo) {
-    alert('Будь ласка, оберіть фото для завантаження.');
-    return;
-  }
+      if (!this.profile.photo) {
+        alert('Будь ласка, оберіть фото для завантаження.');
+        return;
+      }
 
-  const formData = new FormData();
-  formData.append('username', this.profile.username);
-  formData.append('email', this.profile.email);
-  formData.append('phone', this.profile.phone || '');
-  formData.append('address', this.profile.address || '');
-  formData.append('bio', this.profile.bio || '');
-  formData.append('photo', this.profile.photo, this.profile.photo.name);
+      const formData = new FormData();
+      formData.append('username', this.profile.username);
+      formData.append('first_name', this.profile.first_name || '');
+      formData.append('last_name', this.profile.last_name || '');
+      formData.append('email', this.profile.email);
+      formData.append('phone', this.profile.phone || '');
+      formData.append('address', this.profile.address || '');
+      formData.append('bio', this.profile.bio || '');
+      formData.append('photo', this.profile.photo, this.profile.photo.name);
+      formData.append('is_doctor', this.profile.is_doctor);
+      formData.append('is_user', this.profile.is_user);
+      formData.append('is_superuser', this.profile.is_superuser);
+      formData.append('is_staff', this.profile.is_staff);
 
-  apiClient
-    .put('profile/', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-    .then(() => {
-      alert('Фото профілю оновлено успішно');
-      this.isEditingPhoto = false;
-      this.fetchUserProfile();
-    })
-    .catch((error) => {
-      console.error('Error updating profile photo:', error);
-      alert('Сталася помилка при оновленні фото.');
-    });
-},
+      apiClient
+        .put('profile/', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        .then(() => {
+          alert('Фото профілю оновлено успішно');
+          this.isEditingPhoto = false;
+          this.fetchUserProfile();
+        })
+        .catch((error) => {
+          console.error('Error updating profile photo:', error);
+          alert('Сталася помилка при оновленні фото.');
+        });
+    },
     onFileChange(e) {
       this.profile.photo = e.target.files[0];
     },

@@ -14,7 +14,7 @@
       <div class="grid-item" v-if="isSuperuser || isStaff">
         <UserManagementComponent />
       </div>
-      <div class="grid-item">
+      <div class="grid-item" v-if="isDoctor || isUser || isSuperuser">
         <DoctorList />
       </div>
     </div>
@@ -26,7 +26,7 @@ import UserConsultationsComponent from '@/components/UserConsultationsComponent.
 import MessagesComponent from '@/components/MessagesComponent.vue';
 import CreateConsultationComponent from '@/components/CreateConsultationComponent.vue';
 import UserManagementComponent from '@/components/UserManagementComponent.vue';
-import DoctorList from '@/components/DoctorList.vue'; // Імпортуємо новий компонент
+import DoctorList from '@/components/DoctorList.vue';
 
 export default {
   name: 'DashboardPage',
@@ -35,13 +35,14 @@ export default {
     MessagesComponent,
     CreateConsultationComponent,
     UserManagementComponent,
-    DoctorList, // Підключаємо новий компонент
+    DoctorList,
   },
   data() {
     return {
       isDoctor: false,
       isSuperuser: false,
       isStaff: false,
+      isUser: false,
     };
   },
   created() {
@@ -54,11 +55,15 @@ export default {
         is_doctor: localStorage.getItem('isDoctor') === 'true',
         is_superuser: localStorage.getItem('isSuperuser') === 'true',
         is_staff: localStorage.getItem('isStaff') === 'true',
+        is_user: localStorage.getItem('isUser') === 'true',
+
       };
 
       this.isDoctor = user.is_doctor;
       this.isSuperuser = user.is_superuser;
       this.isStaff = user.is_staff;
+      this.isUser = user.is_user;
+      console.log('doctor, superuser, staff, user', this.isDoctor, this.isSuperuser, this.isStaff, this.isUser);
     },
   },
 };

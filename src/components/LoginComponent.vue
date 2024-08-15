@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import apiClient from '@/services/apiClient';  // Імпортуємо apiClient
+import apiClient from '@/services/apiClient';
 
 export default {
   name: 'LoginComponent',
@@ -35,7 +35,7 @@ export default {
   methods: {
     login() {
       apiClient
-        .post('login/', this.form)  // Використовуємо apiClient для запиту
+        .post('login/', this.form)
         .then((response) => {
           console.log('Login successful:', response.data);
           // Зберігаємо токени у localStorage
@@ -44,7 +44,7 @@ export default {
           localStorage.setItem('userEmail', this.form.email);
 
           // Отримуємо список користувачів
-          return apiClient.get('users/', {  // Використовуємо apiClient для запиту
+          return apiClient.get('users/', {
             headers: {
               Authorization: `Bearer ${response.data.access}`,
             },
@@ -52,15 +52,15 @@ export default {
         })
         .then((usersResponse) => {
           console.log('Fetched users:', usersResponse.data);
-          // Знаходимо поточного користувача за email
           const currentUser = usersResponse.data.find(user => user.email === this.form.email);
 
           if (currentUser) {
             console.log('Current user found:', currentUser);
             // Зберігаємо ролі користувача у localStorage
-            localStorage.setItem('isDoctor', currentUser.is_doctor);
-            localStorage.setItem('isSuperuser', currentUser.is_superuser);
-            localStorage.setItem('isStaff', currentUser.is_staff);
+            localStorage.setItem('isDoctor', currentUser.is_doctor.toString());
+            localStorage.setItem('isSuperuser', currentUser.is_superuser.toString());
+            localStorage.setItem('isStaff', currentUser.is_staff.toString());
+            localStorage.setItem('isUser', currentUser.is_user.toString());
 
             // Перенаправляємо користувача на dashboard після успішного входу
             this.$router.push('/dashboard');
@@ -69,10 +69,10 @@ export default {
             console.error('User not found');
           }
         })
-        .catch((error) => {
-          console.error('Error logging in or fetching users:', error);
-          this.errorMessage = 'Неправильний email або пароль. Спробуйте ще раз.';
-        });
+          .catch((error) => {
+            console.error('Error logging in or fetching users:', error);
+            this.errorMessage = 'Неправильний email або пароль. Спробуйте ще раз.';
+          });
     },
   },
 };

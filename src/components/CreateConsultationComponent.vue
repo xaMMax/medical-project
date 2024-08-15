@@ -55,32 +55,23 @@ export default {
     };
   },
   methods: {
-    fetchPatientsAndDoctor() {
+    fetchPatients() {
       apiClient
-        .get('users/')
-        .then((response) => {
-          // Фільтруємо тільки пацієнтів
-          this.patients = response.data.filter(user => !user.is_doctor && !user.is_superuser && !user.is_staff);
-
-          // Зберігаємо ID та ім'я доктора з першого знайденого користувача, який є доктором
-          const doctor = response.data.find(user => user.is_doctor);
-          if (doctor) {
-            this.doctorId = doctor.id;
-            this.doctorName = `${doctor.first_name} ${doctor.last_name}`;
-          } else {
-            console.error('Доктор не знайдений у відповіді сервера');
-          }
-        })
-        .catch((error) => {
-          console.error('Error fetching patients and doctor:', error);
-          if (error.response && error.response.status === 401) {
-            this.$router.push('/login');
-          }
-        });
+          .get('users/')
+          .then((response) => {
+            // Фільтруємо тільки пацієнтів
+            this.patients = response.data.filter(user => !user.is_doctor && !user.is_superuser && !user.is_staff);
+          })
+          .catch((error) => {
+            console.error('Error fetching patients:', error);
+            if (error.response && error.response.status === 401) {
+              this.$router.push('/login');
+            }
+          });
     },
     submitConsultation() {
       if (!this.doctorId) {
-        console.error('Доктор не знайдений у відповіді сервера');
+        console.error('Доктор не знайдений у localStorage');
         return;
       }
 
@@ -90,28 +81,33 @@ export default {
       };
 
       apiClient
-        .post('consultations/', consultationData)
-        .then(() => {
-          this.successMessage = 'Консультацію успішно створено!';
+          .post('consultations/', consultationData)
+          .then(() => {
+            this.successMessage = 'Консультацію успішно створено!';
 
-          // Очищуємо форму після успішного створення консультації
-          this.form.patient = '';
-          this.form.date = '';
-          this.form.time = '';
-          this.form.notes = '';
+            // Очищуємо форму після успішного створення консультації
+            this.form.patient = '';
+            this.form.date = '';
+            this.form.time = '';
+            this.form.notes = '';
 
-          // Очищаємо повідомлення через 5 секунд
-          setTimeout(() => {
-            this.successMessage = '';
-          }, 5000);
-        })
-        .catch((error) => {
-          console.error('Error creating consultation:', error);
-        });
+            // Очищаємо повідомлення через 5 секунд
+            setTimeout(() => {
+              this.successMessage = '';
+            }, 5000);
+          })
+          .catch((error) => {
+            console.error('Error creating consultation:', error);
+          });
     },
   },
   created() {
-    this.fetchPatientsAndDoctor();  // Завантажуємо список пацієнтів і доктора під час створення компонента
+    // Завантажуємо дані лікаря з localStorage
+    this.doctorId = localStorage.getItem('doctorId');
+    this.doctorName = localStorage.getItem('doctorName');
+
+    // Завантажуємо список пацієнтів
+    this.fetchPatients();
   },
 };
 </script>

@@ -29,17 +29,18 @@ export default {
   },
   methods: {
     submitMessage() {
-      apiClient.post('/api/messages/', {
+      apiClient.post('/messages/', {
+        sender: this.recipientId,
         recipient: this.recipientId,
         content: this.content,
       })
-      .then(() => {
-        this.$router.push('/doctors');
-        alert('Повідомлення надіслано успішно!');
-      })
-      .catch(error => {
-        console.error('Error sending message:', error);
-      });
+          .then(() => {
+            this.$router.push('/dashboard');
+            alert('Повідомлення надіслано успішно!');
+          })
+          .catch(error => {
+            console.error('Error sending message:', error);
+          });
     }
   }
 };

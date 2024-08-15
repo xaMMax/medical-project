@@ -1,17 +1,17 @@
 <template>
-  <div class="doctor-list">
-    <h1>Список Лікарів</h1>
-    <ul v-if="doctors.length">
-      <li v-for="doctor in doctors" :key="doctor.id">
-        <div class="doctor-info">
-          <img v-if="doctor.photo" :src="doctor.photo" alt="Фото лікаря" class="doctor-photo"/>
-          <p><strong>{{ doctor.first_name }} {{ doctor.last_name }}</strong></p>
-          <p>{{ doctor.email }}</p>
-          <button @click="sendMessage(doctor.id)">Написати повідомлення</button>
+  <div class="user-list">
+    <h2>{{ isDoctorOrSuperuser ? 'Список Користувачів' : 'Список Лікарів' }}</h2>
+    <ul v-if="filteredUsers.length">
+      <li v-for="user in filteredUsers" :key="user.id">
+        <div class="user-info">
+          <img v-if="user.photo" :src="user.photo" alt="Фото користувача" class="user-photo"/>
+          <p><strong>{{ user.first_name }} {{ user.last_name }}</strong></p>
+          <p>{{ user.email }}</p>
+          <button @click="sendMessage(user.id)">Написати повідомлення</button>
         </div>
       </li>
     </ul>
-    <p v-else>Завантаження списку лікарів...</p>
+    <p v-else>Завантаження списку...</p>
   </div>
 </template>
 
@@ -19,50 +19,64 @@
 import apiClient from "@/services/apiClient";
 
 export default {
-  name: 'DoctorList',
+  name: 'UserList',
   data() {
     return {
-      doctors: [],
+      users: [],
+      currentUser: null,
+      isLoaded: false,
     };
   },
-  methods: {
-    fetchDoctors() {
-      apiClient.get('/api/users/doctors/')
-        .then(response => {
-          this.doctors = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching doctors:', error);
-        });
+  computed: {
+    isDoctorOrSuperuser() {
+      return this.currentUser && (this.currentUser.is_doctor || this.currentUser.is_superuser);
     },
-    sendMessage(doctorId) {
-      // Перенаправляємо користувача на сторінку надсилання повідомлення або відкриваємо модальне вікно
-      this.$router.push({ name: 'SendMessage', params: { recipientId: doctorId } });
+    filteredUsers() {
+      // Якщо користувач лікар або суперкористувач, повертаємо всіх користувачів. Інакше, повертаємо тільки лікарів.
+      return this.isDoctorOrSuperuser ? this.users : this.users.filter(user => user.is_doctor);
+    }
+  },
+  methods: {
+    fetchUsers() {
+      apiClient.get('/users/')
+          .then(response => {
+            this.users = response.data;
+            this.currentUser = this.users.find(user => user.email === localStorage.getItem('userEmail'));
+          })
+          .catch(error => {
+            console.error('Error fetching users:', error);
+          })
+          .finally(() => {
+            this.isLoaded = true;
+          });
+    },
+    sendMessage(userId) {
+      this.$router.push({name: 'SendMessage', params: {recipientId: userId}});
     }
   },
   created() {
-    this.fetchDoctors();
+    this.fetchUsers();
   },
 };
 </script>
 
 <style scoped>
-.doctor-list {
+.user-list {
   padding: 20px;
 }
 
-h1 {
+h2 {
   font-size: 2rem;
   margin-bottom: 20px;
 }
 
-.doctor-info {
+.user-info {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.doctor-photo {
+.user-photo {
   width: 50px;
   height: 50px;
   border-radius: 50%;
