@@ -1,7 +1,7 @@
 import axios from 'axios';
 import router from '../router';
 
-const API_URL = 'https://xammax.pythonanywhere.com/api/';
+const API_URL = process.env.VUE_APP_DJANGO_API || 'http://localhost:8000/api/';
 
 const apiClient = axios.create({
   baseURL: API_URL,

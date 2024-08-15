@@ -16,15 +16,15 @@ module.exports = defineConfig({
     }
   },
   publicPath: process.env.NODE_ENV === 'production'
-    ? '/medical-project/' // Відповідає розміщенню на GitHub Pages
+    ? '/'
     : '/',
   devServer: {
     proxy: {
       '/api': {
-        target: 'https://xammax.pythonanywhere.com',  // Ваш бекенд сервер
+        target: 'http://localhost:8000/',
         changeOrigin: true,
-        secure: false, // Якщо бекенд має SSL
-        pathRewrite: { '^/api': '' }, // Переписує шлях, видаляючи префікс /api
+        secure: false,
+        pathRewrite: { '^/api': '' },
       }
     }
   }
