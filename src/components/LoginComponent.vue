@@ -37,7 +37,7 @@ export default {
       apiClient
         .post('login/', this.form)
         .then((response) => {
-          console.log('Login successful:', response.data);
+          // console.log('Login successful:', response.data);
           // Зберігаємо токени у localStorage
           localStorage.setItem('accessToken', response.data.access);
           localStorage.setItem('refreshToken', response.data.refresh);
@@ -51,7 +51,7 @@ export default {
           });
         })
         .then((usersResponse) => {
-          console.log('Fetched users:', usersResponse.data);
+          // console.log('Fetched users:', usersResponse.data);
           const currentUser = usersResponse.data.find(user => user.email === this.form.email);
 
           if (currentUser) {
@@ -61,6 +61,13 @@ export default {
             localStorage.setItem('isSuperuser', currentUser.is_superuser.toString());
             localStorage.setItem('isStaff', currentUser.is_staff.toString());
             localStorage.setItem('isUser', currentUser.is_user.toString());
+
+
+            // Зберігаємо інформацію про лікаря у localStorage
+            if (currentUser.is_doctor) {
+              localStorage.setItem('doctorId', currentUser.id);
+              localStorage.setItem('doctorName', `${currentUser.first_name} ${currentUser.last_name}`);
+            }
 
             // Перенаправляємо користувача на dashboard після успішного входу
             this.$router.push('/dashboard');

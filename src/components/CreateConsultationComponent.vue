@@ -4,7 +4,7 @@
     <form @submit.prevent="submitConsultation">
       <div class="form-group">
         <label for="doctor">Лікар</label>
-        <p id="doctor"> {{ doctorName }} (ID: {{ doctorId }}) </p>
+        <p id="doctor"> {{ doctorName }} </p>
 
         <label for="patient">Пацієнт</label>
         <select v-model="form.patient" id="patient" required>
@@ -105,6 +105,9 @@ export default {
     // Завантажуємо дані лікаря з localStorage
     this.doctorId = localStorage.getItem('doctorId');
     this.doctorName = localStorage.getItem('doctorName');
+
+    console.log('Loaded doctorId:', this.doctorId);
+    console.log('Loaded doctorName:', this.doctorName);
 
     // Завантажуємо список пацієнтів
     this.fetchPatients();
