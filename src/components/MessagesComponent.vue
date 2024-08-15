@@ -6,11 +6,12 @@
       <li v-for="message in messages" :key="message.id" :class="{ unread: !message.is_read }">
         <strong>Від {{ message.sender_name }}</strong> до {{ message.recipient_name }}: {{ message.content }}
         <span class="timestamp">{{ formatDate(message.created_at) }}</span>
-        <button v-if="message.sender !== message.recipient" @click="replyToMessage(message.sender)">Відповісти</button>
+        <button v-if="message.sender !== currentUserId" @click="replyToMessage(message.sender)">Відповісти</button>
       </li>
     </ul>
   </div>
 </template>
+
 
 <script>
 import apiClient from '@/services/apiClient';
