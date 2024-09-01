@@ -1,4 +1,5 @@
 <template>
+  <meta name="google-site-verification" content="JAMdMAFydPrtWfEwUngt-eQUlRMTafy_ytHjXRzbAiw" />
   <div class="home-page">
     <WelcomeComponent />
 <!--    <ConsultationsListComponent />-->
