@@ -24,6 +24,11 @@ export default {
       currentUserId: null,
     };
   },
+  // computed: {
+  //   canReplay(){
+  //     return this.message
+  //   }
+  // },
   methods: {
     fetchMessages() {
       apiClient
@@ -44,7 +49,7 @@ export default {
         })
         .then((messagesWithNames) => {
           this.messages = messagesWithNames;
-          console.log(this.messages);
+          // console.log(this.messages);
         })
         .catch((error) => {
           console.error('Error fetching messages:', error);

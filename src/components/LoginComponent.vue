@@ -55,7 +55,7 @@ export default {
           const currentUser = usersResponse.data.find(user => user.email === this.form.email);
 
           if (currentUser) {
-            console.log('Current user found:', currentUser);
+            // console.log('Current user found:', currentUser);
             // Зберігаємо ролі користувача у localStorage
             localStorage.setItem('isDoctor', currentUser.is_doctor.toString());
             localStorage.setItem('isSuperuser', currentUser.is_superuser.toString());
@@ -88,6 +88,7 @@ export default {
 <style scoped>
 .login {
   padding: 20px;
+
 }
 
 h2 {

@@ -16,7 +16,7 @@
 
       <div class="form-group">
         <label for="date">Дата</label>
-        <input type="date" v-model="form.date" id="date" required />
+        <input type="date" v-model="form.date" id="date" :min="new Date().toISOString().split('T')[0]" required />
       </div>
 
       <div class="form-group">

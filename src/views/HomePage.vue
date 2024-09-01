@@ -21,6 +21,10 @@ export default {
 <style scoped>
 .home-page {
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .home-page > *:not(:last-child) {

@@ -1,28 +1,26 @@
 <template>
   <div class="login-page">
-    <h1>Вхід до системи</h1>
     <div class="auth-container">
       <div class="auth-section">
-        <h2>Увійти</h2>
         <LoginComponent />
       </div>
-      <div class="auth-section">
-        <h2>Реєстрація</h2>
-        <RegisterComponent />
-      </div>
+<!--      <div class="auth-section">-->
+<!--        <h2>Реєстрація</h2>-->
+<!--        <RegisterComponent />-->
+<!--      </div>-->
     </div>
   </div>
 </template>
 
 <script>
 import LoginComponent from '@/components/LoginComponent.vue';
-import RegisterComponent from '@/components/RegisterComponent.vue';
+// import RegisterComponent from '@/components/RegisterComponent.vue';
 
 export default {
   name: 'LoginPage',
   components: {
     LoginComponent,
-    RegisterComponent,
+    // RegisterComponent,
   },
 };
 </script>
@@ -33,6 +31,11 @@ export default {
   max-width: 800px;
   margin: 0 auto;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
 }
 
 h1 {
@@ -42,8 +45,10 @@ h1 {
 
 .auth-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   gap: 20px;
+  width: 500px;
+  min-width: 400px;
 }
 
 .auth-section {

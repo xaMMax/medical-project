@@ -63,7 +63,7 @@ export default {
       this.isSuperuser = user.is_superuser;
       this.isStaff = user.is_staff;
       this.isUser = user.is_user;
-      console.log('doctor, superuser, staff, user', this.isDoctor, this.isSuperuser, this.isStaff, this.isUser);
+      // console.log('doctor, superuser, staff, user', this.isDoctor, this.isSuperuser, this.isStaff, this.isUser);
     },
   },
 };

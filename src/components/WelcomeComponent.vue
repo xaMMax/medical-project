@@ -30,6 +30,7 @@ export default {
 .welcome {
   text-align: center;
   padding: 20px;
+  max-width: 800px;
 }
 
 h1 {

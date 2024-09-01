@@ -1,29 +1,33 @@
 <template>
-  <div class="register">
-    <h2>Реєстрація</h2>
-    <form @submit.prevent="register">
-      <div class="form-group">
-        <label for="username">Ім'я користувача</label>
-        <input type="text" v-model="form.username" id="username" required />
+  <div class="register-main">
+    <div class="auth-section">
+      <div class="register">
+      <h2>Реєстрація</h2>
       </div>
+      <form @submit.prevent="register">
+        <div class="form-group">
+          <label for="username">Ім'я користувача</label>
+          <input type="text" v-model="form.username" id="username" required />
+        </div>
 
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" v-model="form.email" id="email" required />
-      </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" v-model="form.email" id="email" required />
+        </div>
 
-      <div class="form-group">
-        <label for="password">Пароль</label>
-        <input type="password" v-model="form.password" id="password" required />
-      </div>
+        <div class="form-group">
+          <label for="password">Пароль</label>
+          <input type="password" v-model="form.password" id="password" required />
+        </div>
 
-      <div class="form-group">
-        <label for="confirmPassword">Підтвердження пароля</label>
-        <input type="password" v-model="form.confirmPassword" id="confirmPassword" required />
-      </div>
+        <div class="form-group">
+          <label for="confirmPassword">Підтвердження пароля</label>
+          <input type="password" v-model="form.confirmPassword" id="confirmPassword" required />
+        </div>
 
-      <button type="submit">Зареєструватись</button>
-    </form>
+        <button type="submit">Зареєструватись</button>
+      </form>
+    </div>
     <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
     <p v-if="successMessage" class="success">{{ successMessage }}</p>
   </div>
@@ -81,13 +85,31 @@ export default {
 </script>
 
 <style scoped>
+.register-main{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
 .register {
   padding: 20px;
+  text-align: center;
 }
 
 h2 {
   font-size: 2rem;
   margin-bottom: 20px;
+}
+
+.auth-section {
+  flex: 1;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 500px;
+  min-width: 400px;
 }
 
 .form-group {
@@ -101,7 +123,7 @@ label {
 }
 
 input {
-  width: 100%;
+  width: 90%;
   padding: 8px;
   font-size: 1rem;
   border: 1px solid #ccc;
